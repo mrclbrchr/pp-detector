@@ -4,18 +4,14 @@ import com.orbitz.consul.Consul;
 import com.orbitz.consul.HealthClient;
 import com.orbitz.consul.model.health.Service;
 import com.orbitz.consul.model.health.ServiceHealth;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.security.Provider;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +40,7 @@ public class PpDetectorApplication {
         }
     }
 
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 10000)
     public void refreshHealthServices() {
         processorList.clear();
         sinkList.clear();
@@ -62,13 +58,13 @@ public class PpDetectorApplication {
         JSONObject serviceMeta = new JSONObject(service.getMeta());
         String serviceType = serviceMeta.getString("type");
         if(serviceType.contains("processor")){
-            processorList.add(service);
+            processorList.add(serviceMeta);
         } else if(serviceType.contains("sink")){
-            sinkList.add(service);
+            sinkList.add(serviceMeta);
         } else if(serviceType.contains("stream")){
-            streamList.add(service);
+            streamList.add(serviceMeta);
         } else if(serviceType.contains("set")){
-            setList.add(service);
+            setList.add(serviceMeta);
         }
     }
 
@@ -92,5 +88,6 @@ public class PpDetectorApplication {
         for (Object value : streamList) {
             System.out.println(List.of(value));
         }
+
     }
 }
